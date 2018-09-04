@@ -66,34 +66,36 @@ while (True):
                        [0, 1, 0]],
                       dtype=np.uint8)
 
-    opening = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
-    closing = cv2.morphologyEx(opening, cv2.MORPH_CLOSE, kernel)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
 
-    ret, black = cv2.threshold(mask, 127, 255, 0)
+    ret, mask = cv2.threshold(mask, 127, 255, 0)
 
-    im2, contours, hierarchy = cv2.findContours(black, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    im2, contours, hierarchy = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    if contours is not None and len(contours) > 85:
+    if contours is not None:
         for cnt in contours:
-            x, y, w, h = cv2.boundingRect(cnt)
-            ratio = w / h
+            if len(cnt) > 50:
 
-            area_circle_from_rect = pi*((w/2)**2)
+                x, y, w, h = cv2.boundingRect(cnt)
+                ratio = w / h
 
-            (a, b), radius = cv2.minEnclosingCircle(cnt)
-            center = (int(a), int(b))
-            radius = int(radius)
+                area_circle_from_rect = pi*((w/2)**2)
 
-            area_circle = pi*(radius ** 2)
+                (a, b), radius = cv2.minEnclosingCircle(cnt)
+                center = (int(a), int(b))
+                radius = int(radius)
 
-            area_ratio = area_circle/area_circle_from_rect
+                area_circle = pi*(radius ** 2)
 
-            if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and area_circle_from_rect > 2500:
-                cv2.circle(original, center, radius, (255, 255, 0), 6)
-                #cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
-                cv2.putText(original, "Fuel", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0),2)
-                counter += 1
+                area_ratio = area_circle/area_circle_from_rect
+
+                if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and radius > 5:
+                    cv2.circle(original, center, radius, (255, 255, 0), 5)
+                    #cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
+                    cv2.putText(original, "Fuel", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0),2)
+                    counter += 1
 
     # show thresholded image
     cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
