@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-from math import pi
+from math import pi, atan2
 
 cap = cv2.VideoCapture(1)
 cv2.namedWindow('image')
@@ -31,7 +31,7 @@ cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
 switch = '1 : Reset'
 cv2.createTrackbar(switch, 'image',0,1,callback)
 
-while (True):
+while True:
     ret, frame = cap.read()
     original = frame.copy()
     # grab the frame
@@ -93,9 +93,13 @@ while (True):
 
                 if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and radius > 5:
                     cv2.circle(original, center, radius, (255, 255, 0), 5)
-                    #cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
-                    cv2.putText(original, "Fuel", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0),2)
+                    # cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
                     counter += 1
+                    (xtarget, y), _ = cv2.minEnclosingCircle(cnt)
+                    xframe = frame.shape[1] / 2
+                    f = 550
+                    angle = atan2((xtarget - xframe), f) * (180/pi)
+                    cv2.putText(original, str(int(angle)), (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2)
 
     # show thresholded image
     cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
