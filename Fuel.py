@@ -11,9 +11,9 @@ def callback(x):
 
 ilowH = 10
 ihighH = 43
-ilowS = 65
+ilowS = 145
 ihighS = 255
-ilowV = 189
+ilowV = 147
 ihighV = 255
 
 counter = 0
