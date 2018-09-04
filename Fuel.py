@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 from math import pi
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cv2.namedWindow('image')
 
 
@@ -10,11 +10,11 @@ def callback(x):
     pass
 
 
-ilowH = 0
-ihighH = 255
-ilowS = 0
+ilowH = 10
+ihighH = 43
+ilowS = 65
 ihighS = 255
-ilowV = 0
+ilowV = 189
 ihighV = 255
 
 # create trackbars for color change
@@ -61,7 +61,7 @@ while (True):
 
     im2, contours, hierarchy = cv2.findContours(black, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    if contours is not None and len(contours) > 100:
+    if contours is not None and len(contours) > 85:
         for cnt in contours:
             x, y, w, h = cv2.boundingRect(cnt)
             ratio = w / h
@@ -76,14 +76,15 @@ while (True):
 
             area_ratio = area_circle/area_circle_from_rect
 
-            if 0.8 < ratio < 1.2 and 0.8 < area_ratio < 1.2 and area_circle_from_rect > 2500:
-                cv2.circle(frame, center, radius, (255, 255, 0), 2)
-                #cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 255, 0), 2)
-                cv2.putText(frame, "Fuel", (0, 0), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 255, 255))
+            if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and area_circle_from_rect > 2500:
+                cv2.circle(original, center, radius, (255, 255, 0), 6)
+                #cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
+                cv2.putText(original, "Fuel", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0),2)
 
 
     # show thresholded image
-    cv2.imshow('download.jpg', frame)
+    cv2.imshow('mask', frame)
+    cv2.imshow('original', original)
     k = cv2.waitKey(1) & 0xFF  # large wait time to remove freezing
     if k == 113 or k == 27:
         break
