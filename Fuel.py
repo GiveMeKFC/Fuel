@@ -97,9 +97,10 @@ while True:
                     counter += 1
                     (xtarget, y), _ = cv2.minEnclosingCircle(cnt)
                     xframe = frame.shape[1] / 2
-                    f = 550
+                    f = 538.5826771653543
                     angle = atan2((xtarget - xframe), f) * (180/pi)
-                    cv2.putText(original, str(int(angle)), (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 2)
+                    distance = (f*12.7)/(2*radius)
+                    cv2.putText(original, str(int(distance)), (int(x), int(y+2*radius)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3)
 
     # show thresholded image
     cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
