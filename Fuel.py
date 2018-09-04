@@ -9,13 +9,14 @@ cv2.namedWindow('image')
 def callback(x):
     pass
 
-
 ilowH = 10
 ihighH = 43
 ilowS = 65
 ihighS = 255
 ilowV = 189
 ihighV = 255
+
+counter = 0
 
 # create trackbars for color change
 cv2.createTrackbar('lowH', 'image', ilowH, 179, callback)
@@ -29,7 +30,6 @@ cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
 
 switch = '1 : Reset'
 cv2.createTrackbar(switch, 'image',0,1,callback)
-
 
 while (True):
     ret, frame = cap.read()
@@ -93,11 +93,13 @@ while (True):
                 cv2.circle(original, center, radius, (255, 255, 0), 6)
                 #cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
                 cv2.putText(original, "Fuel", (x, y), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0),2)
-
+                counter += 1
 
     # show thresholded image
+    cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     cv2.imshow('mask', frame)
     cv2.imshow('original', original)
+    counter = 0
     k = cv2.waitKey(1) & 0xFF  # large wait time to remove freezing
     if k == 113 or k == 27:
         break
