@@ -27,11 +27,24 @@ cv2.createTrackbar('highS', 'image', ihighS, 255, callback)
 cv2.createTrackbar('lowV', 'image', ilowV, 255, callback)
 cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
 
+switch = '1 : Reset'
+cv2.createTrackbar(switch, 'image',0,1,callback)
+
+
 while (True):
     ret, frame = cap.read()
     original = frame.copy()
     # grab the frame
     frame = original.copy()
+
+    if cv2.getTrackbarPos(switch, 'image') == 1:
+        cv2.setTrackbarPos('lowH', 'image', 0)
+        cv2.setTrackbarPos('highH', 'image', 179)
+        cv2.setTrackbarPos('lowS', 'image', 0)
+        cv2.setTrackbarPos('highS', 'image', 255)
+        cv2.setTrackbarPos('lowV', 'image', 0)
+        cv2.setTrackbarPos('highV', 'image', 255)
+        cv2.setTrackbarPos(switch, 'image', 0)
 
     # get trackbar positions
     ilowH = cv2.getTrackbarPos('lowH', 'image')
