@@ -92,14 +92,13 @@ while True:
 
                 (a, b), radius = cv2.minEnclosingCircle(cnt)
                 center = (int(a), int(b))
-                radius = int(radius)
 
                 area_circle = pi*(radius ** 2)
 
                 area_ratio = area_circle/area_circle_from_rect
 
                 if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and radius > 5:
-                    cv2.circle(original, center, radius, (255, 255, 0), 5)
+                    cv2.circle(original, center, int(radius), (255, 255, 0), 5)
                     # cv2.rectangle(original, (x, y), (x + w, y + h), (255, 255, 0), 2)
                     counter += 1
                     (xtarget, y), _ = cv2.minEnclosingCircle(cnt)
