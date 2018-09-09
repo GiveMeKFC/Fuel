@@ -9,13 +9,14 @@ cv2.namedWindow('image')
 def callback(x):
     pass
 
+
 ilowH = 10
 ihighH = 43
 ilowS = 145
 ihighS = 255
 ilowV = 147
 ihighV = 255
-
+# count the amount of balls
 counter = 0
 
 # create trackbars for color change
@@ -27,9 +28,13 @@ cv2.createTrackbar('highS', 'image', ihighS, 255, callback)
 
 cv2.createTrackbar('lowV', 'image', ilowV, 255, callback)
 cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
-
+# create trackbar for reset the HSV trackbars values
 switch = '1 : Reset'
-cv2.createTrackbar(switch, 'image',0,1,callback)
+cv2.createTrackbar(switch, 'image', 0, 1, callback)
+# create trackbar for chjange modes between angele and distance
+mode_switch = '1-A/0-D'
+cv2.createTrackbar(mode_switch, 'image', 0, 1, callback)
+
 
 while True:
     ret, frame = cap.read()
@@ -53,6 +58,8 @@ while True:
     ihighS = cv2.getTrackbarPos('highS', 'image')
     ilowV = cv2.getTrackbarPos('lowV', 'image')
     ihighV = cv2.getTrackbarPos('highV', 'image')
+
+    mode = cv2.getTrackbarPos(mode_switch, 'image')
 
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     lower_hsv = np.array([ilowH, ilowS, ilowV])
@@ -100,7 +107,13 @@ while True:
                     f = 538.5826771653543
                     angle = atan2((xtarget - xframe), f) * (180/pi)
                     distance = (f*12.7)/(2*radius)
-                    cv2.putText(original, str(int(distance)), (int(x), int(y+2*radius)), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 0), 3)
+
+                    if mode == 0:
+                        data = distance
+                    else:
+                        data = angle
+
+                    cv2.putText(original, str(int(data)), (int(x), int(y + 2 * radius)), cv2.FONT_HERSHEY_SIMPLEX, 2,(0, 0, 0), 3)
 
     # show thresholded image
     cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
