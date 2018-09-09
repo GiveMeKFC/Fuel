@@ -1,8 +1,8 @@
 import cv2
 import numpy as np
 from math import pi, atan2
-
-cap = cv2.VideoCapture(1)
+# put -1/0/1 in VideoCapture()
+cap = cv2.VideoCapture(0)
 cv2.namedWindow('image')
 
 
@@ -103,7 +103,12 @@ while True:
                     counter += 1
                     (xtarget, y), _ = cv2.minEnclosingCircle(cnt)
                     xframe = frame.shape[1] / 2
-                    f = 538.5826771653543
+
+                    note8_focal = 538.5826771653543
+                    yoga_focal = 540
+
+                    f = yoga_focal
+
                     angle = atan2((xtarget - xframe), f) * (180/pi)
                     distance = (f*12.7)/(2*radius)
 
