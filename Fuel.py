@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 from math import pi, atan2
+
 # put -1/0/1 in VideoCapture()
 cap = cv2.VideoCapture(0)
 cv2.namedWindow('image')
@@ -10,12 +11,14 @@ def callback(x):
     pass
 
 
+# set HSV default values
 ilowH = 10
 ihighH = 43
 ilowS = 145
 ihighS = 255
 ilowV = 147
 ihighV = 255
+
 # count the amount of balls
 counter = 0
 
@@ -28,9 +31,11 @@ cv2.createTrackbar('highS', 'image', ihighS, 255, callback)
 
 cv2.createTrackbar('lowV', 'image', ilowV, 255, callback)
 cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
+
 # create trackbar for reset the HSV trackbars values
 switch = '1 : Reset'
 cv2.createTrackbar(switch, 'image', 0, 1, callback)
+
 # create trackbar for chjange modes between angele and distance
 mode_switch = '1-A/0-D'
 cv2.createTrackbar(mode_switch, 'image', 0, 1, callback)
@@ -52,7 +57,7 @@ while True:
         cv2.setTrackbarPos('highV', 'image', 255)
         cv2.setTrackbarPos(switch, 'image', 0)
 
-    # get trackbar positions
+    # get trackbars position
     ilowH = cv2.getTrackbarPos('lowH', 'image')
     ihighH = cv2.getTrackbarPos('highH', 'image')
     ilowS = cv2.getTrackbarPos('lowS', 'image')
@@ -71,6 +76,7 @@ while True:
 
     frame = cv2.bitwise_and(frame, frame, mask=mask)
 
+    # create a cross kernel
     kernel = np.array([[0, 1, 0],
                        [1, 1, 1],
                        [0, 1, 0]],
