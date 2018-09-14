@@ -42,6 +42,7 @@ while True:
     # grab the frame
     frame = original.copy()
 
+    # decide if needed to reset the HSV trackbars parameters
     if cv2.getTrackbarPos(switch, 'image') == 1:
         cv2.setTrackbarPos('lowH', 'image', 0)
         cv2.setTrackbarPos('highH', 'image', 179)
@@ -59,8 +60,10 @@ while True:
     ilowV = cv2.getTrackbarPos('lowV', 'image')
     ihighV = cv2.getTrackbarPos('highV', 'image')
 
+    # get "mode" trackbar position
     mode = cv2.getTrackbarPos(mode_switch, 'image')
 
+    # create a mask
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     lower_hsv = np.array([ilowH, ilowS, ilowV])
     higher_hsv = np.array([ihighH, ihighS, ihighV])
@@ -104,14 +107,24 @@ while True:
                     (xtarget, y), _ = cv2.minEnclosingCircle(cnt)
                     xframe = frame.shape[1] / 2
 
+                    # focal calculator
+                    object_distance_from_camera = 10  # in cm
+                    object_width = 12  # in cm
+                    object_width_pixels = 60  # in pixels
+
+                    # known focals
+                    calc_focal = (object_width_pixels*object_distance_from_camera)/object_width
                     note8_focal = 538.5826771653543
                     yoga_focal = 540
 
+                    # set which focal to use
                     f = yoga_focal
 
+                    # find the angle and the  distance from the object
                     angle = atan2((xtarget - xframe), f) * (180/pi)
                     distance = (f*12.7)/(2*radius)
 
+                    # choose what to display according to the trackbar data
                     if mode == 0:
                         data = distance
                     else:
