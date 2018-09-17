@@ -1,58 +1,77 @@
 import cv2
+from tkinter import *
 import numpy as np
 import json
 from math import pi, atan2
 
-settings = open("settings.txt", "r+")
+master = Tk()
+
+variable = StringVar(master)
+variable.set("default")  # default value
+
+option_menu = OptionMenu(master, variable, "default", "saved", "fuel")
+option_menu.pack()
+
+# set HSV default values
+hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+
+
+def reset():
+    cv2.setTrackbarPos('lowH', 'image', 0)
+    cv2.setTrackbarPos('highH', 'image', 179)
+    cv2.setTrackbarPos('lowS', 'image', 0)
+    cv2.setTrackbarPos('highS', 'image', 255)
+    cv2.setTrackbarPos('lowV', 'image', 0)
+    cv2.setTrackbarPos('highV', 'image', 255)
+
+
+reset_button = Button(master, text="Reset", command=reset)
+reset_button.pack()
 
 # read hsv settings from the settings file
 
 
 def set_hsv_values():
-
-    hsv_saved_settings = eval(settings.read())
+    settings_file = open("settings.txt", "r+")
+    print(variable.get())
+    hsv_saved_settings = eval(settings_file.read())
+    option = variable.get()
+    global hsv
 
     if hsv_saved_settings is not '':
 
-        user_choose = input("Choose between (default \ saved \ fuel) values")
+        if option == "default":
 
-        if user_choose == "default":
+            hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
 
-            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+        elif option == "saved":
 
-        elif user_choose == "saved":
+            hsv = hsv_saved_settings
 
-            return hsv_saved_settings
+        elif option == "fuel":
 
-        elif user_choose == "fuel":
-
-            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
-
-        else:
-
-            print("UNKNOWN COMMAND")
-            set_hsv_values()
+            hsv = {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
 
     else:
 
-        user_choose = input("Choose between (default \ fuel) values")
+        if option == "default":
 
-        if user_choose == "default":
+            hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
 
-            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+        elif option == "fuel":
 
-        elif user_choose == "fuel":
+            hsv = {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
 
-            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
+    cv2.setTrackbarPos('lowH', 'image', hsv['ilowH'])
+    cv2.setTrackbarPos('highH', 'image', hsv['ihighH'])
+    cv2.setTrackbarPos('lowS', 'image', hsv['ilowS'])
+    cv2.setTrackbarPos('highS', 'image', hsv['ihighS'])
+    cv2.setTrackbarPos('lowV', 'image', hsv['ilowV'])
+    cv2.setTrackbarPos('highV', 'image', hsv['ihighV'])
 
-        else:
 
-            print("UNKNOWN COMMAND")
-            set_hsv_values()
-
-
-# set HSV default values
-hsv = set_hsv_values()
+change_button = Button(master, text="change", command=set_hsv_values)
+change_button.pack()
 
 # put -1/0/1 in VideoCapture()
 cap = cv2.VideoCapture(0)
@@ -76,30 +95,16 @@ cv2.createTrackbar('highS', 'image', hsv['ihighS'], 255, callback)
 cv2.createTrackbar('lowV', 'image', hsv['ilowV'], 255, callback)
 cv2.createTrackbar('highV', 'image', hsv['ihighV'], 255, callback)
 
-# create trackbar for reset the HSV trackbars values
-switch = '1 : Reset'
-cv2.createTrackbar(switch, 'image', 0, 1, callback)
-
 # create trackbar for chjange modes between angele and distance
 mode_switch = '1-A/0-D'
 cv2.createTrackbar(mode_switch, 'image', 0, 1, callback)
 
-
 while True:
+
     ret, frame = cap.read()
     original = frame.copy()
     # grab the frame
     frame = original.copy()
-
-    # decide if needed to reset the HSV trackbars parameters
-    if cv2.getTrackbarPos(switch, 'image') == 1:
-        cv2.setTrackbarPos('lowH', 'image', 0)
-        cv2.setTrackbarPos('highH', 'image', 179)
-        cv2.setTrackbarPos('lowS', 'image', 0)
-        cv2.setTrackbarPos('highS', 'image', 255)
-        cv2.setTrackbarPos('lowV', 'image', 0)
-        cv2.setTrackbarPos('highV', 'image', 255)
-        cv2.setTrackbarPos(switch, 'image', 0)
 
     # get trackbars position
     hsv['ilowH'] = cv2.getTrackbarPos('lowH', 'image')
@@ -146,14 +151,14 @@ while True:
                 x, y, w, h = cv2.boundingRect(cnt)
                 ratio = w / h
 
-                area_circle_from_rect = pi*((w/2)**2)
+                area_circle_from_rect = pi * ((w / 2) ** 2)
 
                 (a, b), radius = cv2.minEnclosingCircle(cnt)
                 center = (int(a), int(b))
 
-                area_circle = pi*(radius ** 2)
+                area_circle = pi * (radius ** 2)
 
-                area_ratio = area_circle/area_circle_from_rect
+                area_ratio = area_circle / area_circle_from_rect
 
                 if 0.75 < ratio < 1.25 and 0.75 < area_ratio < 1.25 and radius > 5:
                     cv2.circle(original, center, int(radius), (255, 255, 0), 5)
@@ -168,7 +173,7 @@ while True:
                     object_width_pixels = 60  # in pixels
 
                     # known focals
-                    calc_focal = (object_width_pixels*object_distance_from_camera)/object_width
+                    calc_focal = (object_width_pixels * object_distance_from_camera) / object_width
                     note8_focal = 538.5826771653543
                     yoga_focal = 540
 
@@ -176,8 +181,8 @@ while True:
                     f = yoga_focal
 
                     # find the angle and the  distance from the object
-                    angle = atan2((xtarget - xframe), f) * (180/pi)
-                    distance = (f*12.7)/(2*radius)
+                    angle = atan2((xtarget - xframe), f) * (180 / pi)
+                    distance = (f * 12.7) / (2 * radius)
 
                     # choose what to display according to the trackbar data
                     if mode == 0:
@@ -185,13 +190,17 @@ while True:
                     else:
                         data = angle
 
-                    cv2.putText(original, str(int(data)), (int(x), int(y + 2 * radius)), cv2.FONT_HERSHEY_SIMPLEX, 2,(0, 0, 0), 3)
+                    cv2.putText(original, str(int(data)), (int(x), int(y + 2 * radius)), cv2.FONT_HERSHEY_SIMPLEX, 2,
+                                (0, 0, 0), 3)
 
     # show thresholded image
     cv2.putText(original, "Fuels: " + str(counter), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
     cv2.imshow('mask', frame)
     cv2.imshow('original', original)
     counter = 0
+    master.update_idletasks()
+    master.update()
     k = cv2.waitKey(1) & 0xFF  # large wait time to remove freezing
     if k == 113 or k == 27:
+        master.destroy()
         break
