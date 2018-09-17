@@ -4,12 +4,14 @@ import numpy as np
 import json
 from math import pi, atan2
 
-master = Tk()
+settings_window = Tk()
 
-variable = StringVar(master)
+settings_window.title("Settings")
+
+variable = StringVar(settings_window)
 variable.set("default")  # default value
 
-option_menu = OptionMenu(master, variable, "default", "saved", "fuel")
+option_menu = OptionMenu(settings_window, variable, "default", "saved", "fuel")
 option_menu.pack()
 
 # set HSV default values
@@ -25,7 +27,7 @@ def reset():
     cv2.setTrackbarPos('highV', 'image', 255)
 
 
-reset_button = Button(master, text="Reset", command=reset)
+reset_button = Button(settings_window, text="Reset", command=reset)
 reset_button.pack()
 
 # read hsv settings from the settings file
@@ -70,7 +72,7 @@ def set_hsv_values():
     cv2.setTrackbarPos('highV', 'image', hsv['ihighV'])
 
 
-change_button = Button(master, text="change", command=set_hsv_values)
+change_button = Button(settings_window, text="change", command=set_hsv_values)
 change_button.pack()
 
 # put -1/0/1 in VideoCapture()
@@ -198,9 +200,11 @@ while True:
     cv2.imshow('mask', frame)
     cv2.imshow('original', original)
     counter = 0
-    master.update_idletasks()
-    master.update()
     k = cv2.waitKey(1) & 0xFF  # large wait time to remove freezing
     if k == 113 or k == 27:
-        master.destroy()
+        settings_window.destroy()
         break
+    else:
+        settings_window.update_idletasks()
+        settings_window.update()
+
