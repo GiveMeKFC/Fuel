@@ -1,6 +1,58 @@
 import cv2
 import numpy as np
+import json
 from math import pi, atan2
+
+settings = open("settings.txt", "r+")
+
+# read hsv settings from the settings file
+
+
+def set_hsv_values():
+
+    hsv_saved_settings = eval(settings.read())
+
+    if hsv_saved_settings is not '':
+
+        user_choose = input("Choose between (default \ saved \ fuel) values")
+
+        if user_choose == "default":
+
+            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+
+        elif user_choose == "saved":
+
+            return hsv_saved_settings
+
+        elif user_choose == "fuel":
+
+            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
+
+        else:
+
+            print("UNKNOWN COMMAND")
+            set_hsv_values()
+
+    else:
+
+        user_choose = input("Choose between (default \ fuel) values")
+
+        if user_choose == "default":
+
+            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+
+        elif user_choose == "fuel":
+
+            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
+
+        else:
+
+            print("UNKNOWN COMMAND")
+            set_hsv_values()
+
+
+# set HSV default values
+hsv = set_hsv_values()
 
 # put -1/0/1 in VideoCapture()
 cap = cv2.VideoCapture(0)
@@ -11,26 +63,18 @@ def callback(x):
     pass
 
 
-# set HSV default values
-ilowH = 10
-ihighH = 43
-ilowS = 145
-ihighS = 255
-ilowV = 147
-ihighV = 255
-
 # count the amount of balls
 counter = 0
 
 # create trackbars for color change
-cv2.createTrackbar('lowH', 'image', ilowH, 179, callback)
-cv2.createTrackbar('highH', 'image', ihighH, 179, callback)
+cv2.createTrackbar('lowH', 'image', hsv['ilowH'], 179, callback)
+cv2.createTrackbar('highH', 'image', hsv['ihighH'], 179, callback)
 
-cv2.createTrackbar('lowS', 'image', ilowS, 255, callback)
-cv2.createTrackbar('highS', 'image', ihighS, 255, callback)
+cv2.createTrackbar('lowS', 'image', hsv['ilowS'], 255, callback)
+cv2.createTrackbar('highS', 'image', hsv['ihighS'], 255, callback)
 
-cv2.createTrackbar('lowV', 'image', ilowV, 255, callback)
-cv2.createTrackbar('highV', 'image', ihighV, 255, callback)
+cv2.createTrackbar('lowV', 'image', hsv['ilowV'], 255, callback)
+cv2.createTrackbar('highV', 'image', hsv['ihighV'], 255, callback)
 
 # create trackbar for reset the HSV trackbars values
 switch = '1 : Reset'
@@ -58,21 +102,26 @@ while True:
         cv2.setTrackbarPos(switch, 'image', 0)
 
     # get trackbars position
-    ilowH = cv2.getTrackbarPos('lowH', 'image')
-    ihighH = cv2.getTrackbarPos('highH', 'image')
-    ilowS = cv2.getTrackbarPos('lowS', 'image')
-    ihighS = cv2.getTrackbarPos('highS', 'image')
-    ilowV = cv2.getTrackbarPos('lowV', 'image')
-    ihighV = cv2.getTrackbarPos('highV', 'image')
+    hsv['ilowH'] = cv2.getTrackbarPos('lowH', 'image')
+    hsv['ihighH'] = cv2.getTrackbarPos('highH', 'image')
+    hsv['ilowS'] = cv2.getTrackbarPos('lowS', 'image')
+    hsv['ihighS'] = cv2.getTrackbarPos('highS', 'image')
+    hsv['ilowV'] = cv2.getTrackbarPos('lowV', 'image')
+    hsv['ihighV'] = cv2.getTrackbarPos('highV', 'image')
+
+    # save HSV dictionary as a txt file
+    with open('settings.txt', 'w') as settings:
+        settings.write(json.dumps(hsv))
+        settings.close()
 
     # get "mode" trackbar position
     mode = cv2.getTrackbarPos(mode_switch, 'image')
 
     # create a mask
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower_hsv = np.array([ilowH, ilowS, ilowV])
-    higher_hsv = np.array([ihighH, ihighS, ihighV])
-    mask = cv2.inRange(hsv, lower_hsv, higher_hsv)
+    hsv_colors = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    lower_hsv = np.array([hsv['ilowH'], hsv['ilowS'], hsv['ilowV']])
+    higher_hsv = np.array([hsv['ihighH'], hsv['ihighS'], hsv['ihighV']])
+    mask = cv2.inRange(hsv_colors, lower_hsv, higher_hsv)
 
     frame = cv2.bitwise_and(frame, frame, mask=mask)
 
