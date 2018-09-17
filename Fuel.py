@@ -1,6 +1,5 @@
 import cv2
 import numpy as np
-import file
 import json
 from math import pi, atan2
 
@@ -8,20 +7,60 @@ from math import pi, atan2
 cap = cv2.VideoCapture(0)
 cv2.namedWindow('image')
 
+settings = open("settings.txt", "r+")
+
 
 def callback(x):
     pass
 
 # read hsv settings from the settings file
-def reading():
-    hsv_settings = eval(open('file.txt', 'r').read())
-    if hsv_settings is '':
-        return {'ilowH' : 10, 'ihighH' : 43, 'ilowS' : 145, 'ihighS' : 255, 'ilowV' : 147, 'ihighV' : 255}
+
+
+def set_hsv_values():
+
+    hsv_saved_settings = eval(settings.read())
+
+    if hsv_saved_settings is not '':
+
+        user_choose = input("Choose between (default \ saved \ fuel) values")
+
+        if user_choose == "default":
+
+            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+
+        elif user_choose == "saved":
+
+            return hsv_saved_settings
+
+        elif user_choose == "fuel":
+
+            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
+
+        else:
+
+            print("UNKNOWN COMMAND")
+            set_hsv_values()
+
     else:
-        return hsv_settings
+
+        user_choose = input("Choose between (default \ fuel) values")
+
+        if user_choose == "default":
+
+            return {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+
+        elif user_choose == "fuel":
+
+            return {'ilowH': 10, 'ihighH': 43, 'ilowS': 145, 'ihighS': 255, 'ilowV': 147, 'ihighV': 255}
+
+        else:
+
+            print("UNKNOWN COMMAND")
+            set_hsv_values()
+
 
 # set HSV default values
-hsv = reading()
+hsv = set_hsv_values()
 
 # count the amount of balls
 counter = 0
