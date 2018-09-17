@@ -3,15 +3,7 @@ import numpy as np
 import json
 from math import pi, atan2
 
-# put -1/0/1 in VideoCapture()
-cap = cv2.VideoCapture(0)
-cv2.namedWindow('image')
-
 settings = open("settings.txt", "r+")
-
-
-def callback(x):
-    pass
 
 # read hsv settings from the settings file
 
@@ -61,6 +53,15 @@ def set_hsv_values():
 
 # set HSV default values
 hsv = set_hsv_values()
+
+# put -1/0/1 in VideoCapture()
+cap = cv2.VideoCapture(0)
+cv2.namedWindow('image')
+
+
+def callback(x):
+    pass
+
 
 # count the amount of balls
 counter = 0
