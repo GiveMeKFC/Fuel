@@ -17,6 +17,11 @@ option_menu.pack()
 # set HSV default values
 hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
 
+# get HSV saved values
+
+settings_file = open("settings.txt", "r+")
+hsv_saved_settings = eval(settings_file.read())
+
 
 def reset():
     cv2.setTrackbarPos('lowH', 'image', 0)
@@ -34,9 +39,8 @@ reset_button.pack()
 
 
 def set_hsv_values():
-    settings_file = open("settings.txt", "r+")
+
     print(variable.get())
-    hsv_saved_settings = eval(settings_file.read())
     option = variable.get()
     global hsv
 
