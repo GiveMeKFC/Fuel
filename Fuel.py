@@ -10,11 +10,19 @@ settings_window = Tk()
 # Set a title for the settings window
 settings_window.title("Settings")
 
-variable = StringVar(settings_window)  # set a variable for the pick from the option menu
-variable.set("default")  # set the default option for the option menu
+hsv_option = StringVar(settings_window)  # set a variable for the pick from the option menu
+hsv_option.set("default")  # set the default option for the option menu
 
-option_menu = OptionMenu(settings_window, variable, "default", "saved", "fuel") # Craete an option menu
-option_menu.pack()
+data_to_show_option = StringVar(settings_window)  # set a variable for the pick from the option menu
+data_to_show_option.set("Angle")  # set the default option for the option menu
+
+hsv_option_menu = OptionMenu(settings_window, hsv_option, "default", "saved", "fuel") # Create an option menu
+hsv_option_menu.pack()
+
+
+data_to_show_option_menu = OptionMenu(settings_window, data_to_show_option, "Angle", "Distance") # Create an option menu
+data_to_show_option_menu.pack()
+
 
 # Create a dictionary for the HSV default values
 hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255} #
@@ -26,8 +34,8 @@ hsv_saved_settings = eval(settings_file.read())
 
 def set_hsv_values():  # read hsv settings from the settings file
 
-    print(variable.get())
-    option = variable.get()
+    print(hsv_option.get())
+    option = hsv_option.get()
     global hsv
 
     if hsv_saved_settings is not '':
@@ -87,9 +95,6 @@ cv2.createTrackbar('highS', 'image', hsv['ihighS'], 255, callback)
 cv2.createTrackbar('lowV', 'image', hsv['ilowV'], 255, callback)
 cv2.createTrackbar('highV', 'image', hsv['ihighV'], 255, callback)
 
-# create trackbar for chjange modes between angele and distance
-mode_switch = '1-A/0-D'
-cv2.createTrackbar(mode_switch, 'image', 0, 1, callback)
 
 while True:
 
@@ -112,7 +117,7 @@ while True:
         settings.close()
 
     # get "mode" trackbar position
-    mode = cv2.getTrackbarPos(mode_switch, 'image')
+    mode = data_to_show_option.get()
 
     # create a mask
     hsv_colors = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -177,9 +182,9 @@ while True:
                     distance = (f * 12.7) / (2 * radius)
 
                     # choose what to display according to the trackbar data
-                    if mode == 0:
+                    if mode == "Distance":
                         data = distance
-                    else:
+                    elif mode == "Angle":
                         data = angle
 
                     cv2.putText(original, str(int(data)), (int(x), int(y + 2 * radius)), cv2.FONT_HERSHEY_SIMPLEX, 2,
