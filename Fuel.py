@@ -4,41 +4,27 @@ import numpy as np
 import json
 from math import pi, atan2
 
+# Create a settings window
 settings_window = Tk()
 
+# Set a title for the settings window
 settings_window.title("Settings")
 
-variable = StringVar(settings_window)
-variable.set("default")  # default value
+variable = StringVar(settings_window)  # set a variable for the pick from the option menu
+variable.set("default")  # set the default option for the option menu
 
-option_menu = OptionMenu(settings_window, variable, "default", "saved", "fuel")
+option_menu = OptionMenu(settings_window, variable, "default", "saved", "fuel") # Craete an option menu
 option_menu.pack()
 
-# set HSV default values
-hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255}
+# Create a dictionary for the HSV default values
+hsv = {'ilowH': 0, 'ihighH': 179, 'ilowS': 0, 'ihighS': 255, 'ilowV': 0, 'ihighV': 255} #
 
 # get HSV saved values
-
 settings_file = open("settings.txt", "r+")
 hsv_saved_settings = eval(settings_file.read())
 
 
-def reset():
-    cv2.setTrackbarPos('lowH', 'image', 0)
-    cv2.setTrackbarPos('highH', 'image', 179)
-    cv2.setTrackbarPos('lowS', 'image', 0)
-    cv2.setTrackbarPos('highS', 'image', 255)
-    cv2.setTrackbarPos('lowV', 'image', 0)
-    cv2.setTrackbarPos('highV', 'image', 255)
-
-
-reset_button = Button(settings_window, text="Reset", command=reset)
-reset_button.pack()
-
-# read hsv settings from the settings file
-
-
-def set_hsv_values():
+def set_hsv_values():  # read hsv settings from the settings file
 
     print(variable.get())
     option = variable.get()
