@@ -1,1 +1,1 @@
-{"ilowH": 0, "ihighH": 179, "ilowS": 0, "ihighS": 255, "ilowV": 0, "ihighV": 255}
+{"ilowS": 145, "ihighH": 43, "ihighV": 255, "ilowV": 147, "ilowH": 10, "ihighS": 255}

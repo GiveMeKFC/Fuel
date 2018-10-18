@@ -74,7 +74,7 @@ change_button = Button(settings_window, text="change", command=set_hsv_values)
 change_button.pack()
 
 # put -1/0/1 in VideoCapture()
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cv2.namedWindow('image')
 
 
@@ -113,8 +113,7 @@ while True:
 
     # save HSV dictionary as a txt file
     with open('settings.txt', 'w') as settings:
-        settings.write(json.dumps(hsv))
-        settings.close()
+        json.dump(hsv, settings)
 
     # get "mode" trackbar position
     mode = data_to_show_option.get()
